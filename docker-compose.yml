@@ -1,0 +1,33 @@
+Version: "3.7" 
+Services: 
+
+  db:
+    image: mariadb:10
+    container_name: wp-60sec
+    environment: 
+      MYSQL_DATABASE: "$(MYSQL_DATABASE)"
+      MYSQL_USER: "$(MYSQL_USER)"
+      MYSQL_PASSWORD: "$(MYSQL_PASSWORD)"
+      MYSQL_ROOT_PASSWORD: "$(MYSQL_ROOT_PASSWORD)"
+
+  wordpress-fpm:
+    image: wordpress:5-fpm-alpine
+    container_name: wp-60sec-fpm
+    links:
+      -db
+    environment: 
+      WORDPRESS_DB_HOST: "$(WORDPRESS_DB_HOST)"
+      WORDPRESS_DB_NAME: "$(WORDPRESS_DB_NAME)"
+      WORDPRESS_DB_USER: "$(WORDPRESS_DB_USER)"
+      WORDPRESS_DB_PASWWORD: "$(WORDPRESS_DB_PASSWORD)"
+      
+  nginx:
+    image: nginx:alpine
+    container_name: wp-60sec-nginx
+    depends_on: 
+      -wordpress-fpm
+    ports:
+      -8080:80
+    volumes: 
+      -conf.d:etc/nginx/conf.db
+     
